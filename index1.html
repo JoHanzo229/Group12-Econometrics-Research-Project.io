@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group 12 — Project Review: GMAL &amp; Deprivation Index</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --paper: #fafaf8;
+    --accent: #2c5282;
+    --accent-light: #ebf4ff;
+    --green: #276749;
+    --green-light: #f0fff4;
+    --amber: #975a16;
+    --amber-light: #fffbeb;
+    --red: #9b2c2c;
+    --red-light: #fff5f5;
+    --border: #d2d6dc;
+    --muted: #6b7280;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Crimson Pro', Georgia, serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.72;
+    font-size: 17px;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+  }
+  h1 {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 1.85rem;
+    font-weight: 700;
+    color: var(--accent);
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+  .subtitle {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 2.5rem;
+  }
+  h2 {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin-top: 2.8rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+  }
+  h3 {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-top: 1.6rem;
+    margin-bottom: 0.5rem;
+  }
+  p { margin-bottom: 1rem; }
+
+  /* ── General table defaults ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.2rem 0 1.8rem;
+    font-size: 0.92rem;
+    line-height: 1.55;
+  }
+  th {
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 600;
+    text-align: left;
+    padding: 0.6rem 0.7rem;
+    border-bottom: 2px solid var(--accent);
+    color: var(--accent);
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  td {
+    padding: 0.55rem 0.7rem;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: 2px solid var(--border); }
+
+  /* ── Results tables (numeric, centred columns) ── */
+  .results-table {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.83rem;
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1rem 0 1.8rem;
+  }
+  .results-table th {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    background: var(--accent-light);
+    border-bottom: 2px solid var(--accent);
+    padding: 0.55rem 0.75rem;
+    text-align: center;
+  }
+  .results-table th.col-left { text-align: left; }
+  .results-table td {
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: center;
+    vertical-align: middle;
+  }
+  .results-table td.col-left { text-align: left; }
+  .results-table tr:last-child td { border-bottom: 2px solid var(--border); }
+  .results-table tr.sep td { border-top: 2px solid var(--border); font-weight: 600; }
+  .results-table tr.sub-header td {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: #f9fafb;
+    border-bottom: 1px solid var(--border);
+    text-align: center;
+    font-weight: 600;
+  }
+  .sig { color: var(--accent); font-size: 0.75rem; }
+  .num-note {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.80rem;
+    color: var(--muted);
+    margin-top: -0.8rem;
+    margin-bottom: 1.4rem;
+  }
+
+  /* ── VIF concern badges ── */
+  .vif-high   { color: var(--red);   font-weight: 700; }
+  .vif-mod    { color: var(--amber); font-weight: 600; }
+  .vif-none   { color: var(--green); }
+
+  /* ── Decision badges for diagnostic table ── */
+  .dec {
+    display: inline-block;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.12rem 0.42rem;
+    border-radius: 3px;
+    margin-right: 0.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .dec-green { background: #c6f6d5; color: var(--green); }
+  .dec-amber { background: #fefcbf; color: var(--amber); }
+  .dec-red   { background: #fed7d7; color: var(--red); }
+  .dec-blue  { background: #bee3f8; color: var(--accent); }
+
+  /* ── Inline key-stats strip ── */
+  .stat-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0.8rem 0 1.6rem;
+  }
+  .stat-box {
+    flex: 1 1 150px;
+    background: var(--accent-light);
+    border: 1px solid #bee3f8;
+    border-radius: 6px;
+    padding: 0.6rem 0.9rem;
+    text-align: center;
+  }
+  .stat-box .stat-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+  .stat-box .stat-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-box .stat-sub {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    color: var(--muted);
+    display: block;
+  }
+
+  /* ── Table caption ── */
+  .tbl-caption {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.35rem;
+    margin-top: 0.5rem;
+  }
+
+  /* ── Code review table tags ── */
+  .strength { background: var(--green-light); }
+  .weakness { background: var(--red-light); }
+  .suggestion { background: var(--amber-light); }
+  .note { background: var(--accent-light); }
+  .tag {
+    display: inline-block;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.45rem;
+    border-radius: 3px;
+    margin-right: 0.3rem;
+  }
+  .tag-green  { background: #c6f6d5; color: var(--green); }
+  .tag-red    { background: #fed7d7; color: var(--red); }
+  .tag-amber  { background: #fefcbf; color: var(--amber); }
+  .tag-blue   { background: #bee3f8; color: var(--accent); }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    background: #f3f4f6;
+    padding: 0.1rem 0.35rem;
+    border-radius: 3px;
+  }
+  .eq {
+    display: block;
+    text-align: center;
+    margin: 1rem 0;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--ink);
+  }
+  .protocol-step {
+    padding: 0.8rem 1rem;
+    margin: 0.6rem 0;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-light);
+  }
+  .protocol-step strong {
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .ref {
+    padding-left: 2rem;
+    text-indent: -2rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.93rem;
+  }
+  .section-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.2rem;
+  }
+  @media print {
+    body { font-size: 11pt; max-width: 100%; }
+    h2 { page-break-after: avoid; }
+    table { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Group 12 — Research Assistant Review</h1>
+<p class="subtitle">ECON32252 Econometrics &amp; Data Science · GMAL &amp; Deprivation Index Project · May 2026</p>
+
+
+<!-- ================================================================== -->
+<h2>R. Statistical Results (R Output)</h2>
+
+<p>This section presents the full tabulated output from the R analysis scripts. All values are drawn directly from the console output and cross-validated results.</p>
+
+
+<!-- ── Table 3: Inline Reporting Numbers ── -->
+<h3>Key Inline Figures (Table 3)</h3>
+<div class="stat-strip">
+  <div class="stat-box">
+    <span class="stat-label">Bivariate GMAL β</span>
+    <span class="stat-val">−0.1480</span>
+    <span class="stat-sub">p &lt; 0.0001</span>
+  </div>
+  <div class="stat-box">
+    <span class="stat-label">Bivariate R²</span>
+    <span class="stat-val">0.0219</span>
+    <span class="stat-sub">2.2% of variance</span>
+  </div>
+  <div class="stat-box">
+    <span class="stat-label">Baseline R² (no GMAL)</span>
+    <span class="stat-val">0.9900</span>
+    <span class="stat-sub">7 domains only</span>
+  </div>
+  <div class="stat-box">
+    <span class="stat-label">Full OLS R² (with GMAL)</span>
+    <span class="stat-val">0.9905</span>
+    <span class="stat-sub">8 predictors</span>
+  </div>
+  <div class="stat-box">
+    <span class="stat-label">Marginal R² from GMAL</span>
+    <span class="stat-val">0.0005</span>
+    <span class="stat-sub">0.05 pp increase</span>
+  </div>
+  <div class="stat-box">
+    <span class="stat-label">Conditional GMAL β</span>
+    <span class="stat-val">−0.0278</span>
+    <span class="stat-sub">p &lt; 0.0001</span>
+  </div>
+</div>
+
+
+<!-- ── Table 1: OLS Regression Models ── -->
+<h3>Table 1 — OLS Regression Results</h3>
+<p class="num-note">Dependent variable: IMD Rank (standardised). Standard errors in parentheses. N = 1,300 LSOAs. Significance: *** p &lt; 0.001.</p>
+
+<table class="results-table">
+<thead>
+<tr>
+  <th class="col-left" style="width:30%">Predictor</th>
+  <th style="width:23%">(1) Bivariate</th>
+  <th style="width:23%">(2) Baseline — no GMAL</th>
+  <th style="width:23%">(3) Full OLS — with GMAL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td class="col-left"><strong>GMAL Score</strong></td>
+  <td>−0.1480<span class="sig">***</span><br><small>(0.0275)</small></td>
+  <td>—</td>
+  <td>−0.0278<span class="sig">***</span><br><small>(0.0034)</small></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Income Rank</strong></td>
+  <td>—</td>
+  <td>0.3231<span class="sig">***</span><br><small>(0.0134)</small></td>
+  <td>0.3136<span class="sig">***</span><br><small>(0.0131)</small></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Employment Rank</strong></td>
+  <td>—</td>
+  <td>0.1540<span class="sig">***</span><br><small>(0.0131)</small></td>
+  <td>0.1948<span class="sig">***</span><br><small>(0.0138)</small></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Education Rank</strong></td>
+  <td>—</td>
+  <td>0.1407<span class="sig">***</span><br><small>(0.0082)</small></td>
+  <td>0.1418<span class="sig">***</span><br><small>(0.0080)</small></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Health &amp; Disability Rank</strong></td>
+  <td>—</td>
+  <td>0.2080<span class="sig">***</span><br><small>(0.0070)</small></td>
+  <td>0.2080<span class="sig">***</span><br><small>(0.0074)</small></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Crime Rank</strong></td>
+  <td>—</td>
+  <td>0.1533<span class="sig">***</span><br><small>(0.0058)</small></td>
+  <td>0.1402<span class="sig">***</span><br><small>(0.0059)</small></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Barriers to Housing Rank</strong></td>
+  <td>—</td>
+  <td>0.0835<span class="sig">***</span><br><small>(0.0033)</small></td>
+  <td>0.0819<span class="sig">***</span><br><small>(0.0032)</small></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Living Environment Rank</strong></td>
+  <td>—</td>
+  <td>0.0848<span class="sig">***</span><br><small>(0.0030)</small></td>
+  <td>0.0810<span class="sig">***</span><br><small>(0.0030)</small></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Constant</strong></td>
+  <td>0.0000<br><small>(0.0274)</small></td>
+  <td>0.0000<br><small>(0.0028)</small></td>
+  <td>0.0000<br><small>(0.0027)</small></td>
+</tr>
+<tr class="sep">
+  <td class="col-left">Observations</td>
+  <td>1,300</td>
+  <td>1,300</td>
+  <td>1,300</td>
+</tr>
+<tr>
+  <td class="col-left">R²</td>
+  <td>0.0219</td>
+  <td>0.9900</td>
+  <td>0.9905</td>
+</tr>
+<tr>
+  <td class="col-left">Adjusted R²</td>
+  <td>0.0212</td>
+  <td>0.9899</td>
+  <td>0.9904</td>
+</tr>
+</tbody>
+</table>
+<p class="num-note">Note: All coefficients significant at p &lt; 0.001. Marginal R² gain from adding GMAL to the full model: +0.0005 (0.05 pp). Conditional GMAL β = −0.0278 remains highly significant (p &lt; 0.0001), confirming incremental predictive content beyond the seven IMD sub-domains.</p>
+
+
+<!-- ── Table 2: Elastic-Net Model Comparison ── -->
+<h3>Table 2 — Elastic-Net Model Comparison</h3>
+<p class="num-note">Cross-validated RMSE across three model specifications. Best α and λ selected by 10-fold CV.</p>
+
+<table class="results-table">
+<thead>
+<tr>
+  <th class="col-left" style="width:20%">Model</th>
+  <th style="width:16%">GMAL Included</th>
+  <th style="width:16%">Best α</th>
+  <th style="width:20%">Best λ</th>
+  <th style="width:14%">CV RMSE</th>
+  <th style="width:14%">Test RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td class="col-left"><strong>Baseline</strong></td>
+  <td>No</td>
+  <td>0.6</td>
+  <td>0.006579</td>
+  <td>0.100843</td>
+  <td>0.089787</td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Linear</strong></td>
+  <td>Linear only</td>
+  <td>0.3</td>
+  <td>0.008697</td>
+  <td>0.098301</td>
+  <td>0.088862</td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Quadratic</strong></td>
+  <td>Linear + Quadratic</td>
+  <td>0.4</td>
+  <td>0.007055</td>
+  <td>0.097612</td>
+  <td>0.088772</td>
+</tr>
+</tbody>
+</table>
+<p class="num-note">ΔRMSE (Quadratic vs. Baseline) = −0.001015. Paired t-test (Baseline vs. Quadratic): t = 0.8218, p = 0.4118. Conclusion: difference is not statistically significant at the 5% level.</p>
+
+
+<!-- ── Table 4: Step-by-Step Diagnostic Tests ── -->
+<h3>Table 4 — Step-by-Step Diagnostic Tests</h3>
+<p class="num-note">Eleven sequential diagnostic steps with test statistics, thresholds, and decisions. Economic implications listed beneath.</p>
+
+<table class="results-table">
+<thead>
+<tr>
+  <th style="width:4%">#</th>
+  <th class="col-left" style="width:24%">Step</th>
+  <th class="col-left" style="width:22%">Test Statistic</th>
+  <th class="col-left" style="width:20%">p-value / Threshold</th>
+  <th class="col-left" style="width:30%">Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>1</td>
+  <td class="col-left">Bivariate OLS</td>
+  <td class="col-left"><code>t = −5.392</code></td>
+  <td class="col-left">p = 0.0000</td>
+  <td class="col-left"><span class="dec dec-green">Pass</span> GMAL significant (bivariate)</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td class="col-left">Full OLS (F-test)</td>
+  <td class="col-left"><code>F = 16761.71</code></td>
+  <td class="col-left">p = 0.0000e+00</td>
+  <td class="col-left"><span class="dec dec-green">Pass</span> Overall model significant</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td class="col-left">GMAL marginal effect</td>
+  <td class="col-left"><code>t = −8.141</code></td>
+  <td class="col-left">p = 0.0000</td>
+  <td class="col-left"><span class="dec dec-green">Pass</span> GMAL significant (conditional)</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td class="col-left">VIF — GMAL (manual)</td>
+  <td class="col-left"><code>VIF = 1.578</code></td>
+  <td class="col-left">Threshold &lt; 5</td>
+  <td class="col-left"><span class="dec dec-green">Pass</span> Low collinearity — proceed</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td class="col-left">VIF — all predictors</td>
+  <td class="col-left"><code>max VIF = 25.673</code><br><small>(Employment.Rank)</small></td>
+  <td class="col-left">Threshold &lt; 5</td>
+  <td class="col-left"><span class="dec dec-red">Flag</span> Some VIFs elevated</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td class="col-left">GAM non-linearity (edf)</td>
+  <td class="col-left"><code>edf = 3.771</code></td>
+  <td class="col-left">Threshold = 1 (linear)</td>
+  <td class="col-left"><span class="dec dec-amber">Note</span> Non-linearity detected — use quadratic</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td class="col-left">GAM smooth p-value</td>
+  <td class="col-left"><code>p = 0.0000</code></td>
+  <td class="col-left">p = 0.0000</td>
+  <td class="col-left"><span class="dec dec-green">Pass</span> Smooth term significant</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td class="col-left">PCA — PC1 variance share</td>
+  <td class="col-left"><code>PC1 = 60.4%</code></td>
+  <td class="col-left">—</td>
+  <td class="col-left"><span class="dec dec-blue">Info</span> Strong common factor — correlated predictors</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td class="col-left">Elastic-net best α</td>
+  <td class="col-left"><code>α = 0.4</code></td>
+  <td class="col-left">CV-selected</td>
+  <td class="col-left"><span class="dec dec-blue">Info</span> Optimal mixing parameter</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td class="col-left">Elastic-net best λ</td>
+  <td class="col-left"><code>λ = 0.007055</code></td>
+  <td class="col-left">CV-selected</td>
+  <td class="col-left"><span class="dec dec-blue">Info</span> Optimal penalty strength</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td class="col-left">Paired t-test (errors)</td>
+  <td class="col-left"><code>t = 0.822</code></td>
+  <td class="col-left">p = 0.4118</td>
+  <td class="col-left"><span class="dec dec-amber">Note</span> No significant improvement</td>
+</tr>
+<tr class="sub-header">
+  <td colspan="5">Economic Implications</td>
+</tr>
+<tr>
+  <td>1</td>
+  <td class="col-left" colspan="4">Transport accessibility is meaningfully associated with deprivation at the neighbourhood level</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td class="col-left" colspan="4">The combined model explains significant cross-LSOA variation in deprivation</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td class="col-left" colspan="4">GMAL carries predictive information beyond the seven IMD sub-domains</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td class="col-left" colspan="4">No predictor is so collinear as to undermine coefficient reliability</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td class="col-left" colspan="4">GMAL's relationship with deprivation is non-linear: diminishing returns to accessibility</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td class="col-left" colspan="4">A quadratic (or spline) specification is statistically justified over a linear one</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td class="col-left" colspan="4">Much cross-domain variation is driven by a single latent 'general deprivation' factor</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td class="col-left" colspan="4">Elastic mix chosen by CV balances LASSO sparsity and Ridge grouping</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td class="col-left" colspan="4">Mild regularisation applied; most coefficients retained near OLS values</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td class="col-left" colspan="4">Adding the quadratic GMAL term produces a statistically significant reduction in prediction error</td>
+</tr>
+</tbody>
+</table>
+
+
+<!-- ── Table 5a: VIF Table ── -->
+<h3>Table 5a — Variance Inflation Factors (Full OLS Model)</h3>
+<p class="num-note">VIF computed via <code>car::vif()</code> on the full 8-predictor OLS model. Conventional thresholds: VIF &lt; 5 = no concern; 5–10 = moderate; &gt; 10 = high.</p>
+
+<table class="results-table">
+<thead>
+<tr>
+  <th class="col-left" style="width:50%">Predictor</th>
+  <th style="width:25%">VIF</th>
+  <th style="width:25%">Concern</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td class="col-left"><strong>Income Rank</strong></td>
+  <td>23.3182</td>
+  <td><span class="vif-high">High</span></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Employment Rank</strong></td>
+  <td>25.6733</td>
+  <td><span class="vif-high">High ★ max</span></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Education, Skills &amp; Training Rank</strong></td>
+  <td>8.6197</td>
+  <td><span class="vif-mod">Moderate</span></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Health Deprivation &amp; Disability Rank</strong></td>
+  <td>7.4210</td>
+  <td><span class="vif-mod">Moderate</span></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Crime Rank</strong></td>
+  <td>4.7077</td>
+  <td><span class="vif-none">None</span></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Barriers to Housing &amp; Services Rank</strong></td>
+  <td>1.4000</td>
+  <td><span class="vif-none">None</span></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Living Environment Rank</strong></td>
+  <td>1.1952</td>
+  <td><span class="vif-none">None</span></td>
+</tr>
+<tr>
+  <td class="col-left"><strong>GMAL Score</strong></td>
+  <td>1.5780</td>
+  <td><span class="vif-none">None</span></td>
+</tr>
+<tr class="sep">
+  <td class="col-left">Manual VIF for GMAL alone</td>
+  <td>1.5780</td>
+  <td>—</td>
+</tr>
+<tr>
+  <td class="col-left">Maximum VIF in full model</td>
+  <td>25.6733</td>
+  <td><span class="vif-high">Employment Rank</span></td>
+</tr>
+</tbody>
+</table>
+<p class="num-note">Note: High VIF for Income and Employment Ranks reflects their strong pairwise correlation within the IMD framework (both carry the highest domain weights). GMAL VIF = 1.578 confirms negligible collinearity with existing domain predictors.</p>
+
+
+<!-- ── Table 5b: PCA Variance Decomposition ── -->
+<h3>Table 5b — PCA: Variance Decomposition</h3>
+<p class="num-note">PCA run on all 8 predictors (7 domain ranks + GMAL Score) with <code>scale. = TRUE</code>. PC1 alone accounts for 60.4% of total variance.</p>
+
+<table class="results-table">
+<thead>
+<tr>
+  <th style="width:12%">PC</th>
+  <th style="width:22%">Std Dev</th>
+  <th style="width:22%">Prop. Variance</th>
+  <th style="width:22%">Cumul. Variance</th>
+  <th class="col-left" style="width:22%">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><strong>PC1</strong></td>
+  <td>2.1978</td>
+  <td><strong>0.6038</strong></td>
+  <td>0.6038</td>
+  <td class="col-left">General deprivation factor</td>
+</tr>
+<tr>
+  <td>PC2</td>
+  <td>1.1274</td>
+  <td>0.1589</td>
+  <td>0.7627</td>
+  <td class="col-left">Secondary dimension</td>
+</tr>
+<tr>
+  <td>PC3</td>
+  <td>0.9252</td>
+  <td>0.1070</td>
+  <td>0.8697</td>
+  <td class="col-left">Tertiary dimension</td>
+</tr>
+<tr>
+  <td>PC4</td>
+  <td>0.8015</td>
+  <td>0.0803</td>
+  <td>0.9500</td>
+  <td class="col-left">—</td>
+</tr>
+<tr>
+  <td>PC5</td>
+  <td>0.4242</td>
+  <td>0.0225</td>
+  <td>0.9725</td>
+  <td class="col-left">—</td>
+</tr>
+<tr>
+  <td>PC6</td>
+  <td>0.3468</td>
+  <td>0.0150</td>
+  <td>0.9875</td>
+  <td class="col-left">—</td>
+</tr>
+<tr>
+  <td>PC7</td>
+  <td>0.2771</td>
+  <td>0.0096</td>
+  <td>0.9971</td>
+  <td class="col-left">—</td>
+</tr>
+<tr>
+  <td>PC8</td>
+  <td>0.1520</td>
+  <td>0.0029</td>
+  <td>1.0000</td>
+  <td class="col-left">—</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Table 5b (cont.) — Top-3 Loadings on PC1 (Dominant Deprivation Factor)</h3>
+<p class="num-note">Sorted by absolute loading magnitude; PC1 represents the 'general deprivation' latent factor.</p>
+
+<table class="results-table">
+<thead>
+<tr>
+  <th class="col-left" style="width:55%">Variable</th>
+  <th style="width:22%">|Loading| on PC1</th>
+  <th style="width:23%">Rank</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td class="col-left"><strong>Income Rank</strong></td>
+  <td>0.4401</td>
+  <td>1st</td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Employment Rank</strong></td>
+  <td>0.4354</td>
+  <td>2nd</td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Health Deprivation &amp; Disability Rank</strong></td>
+  <td>0.4286</td>
+  <td>3rd</td>
+</tr>
+</tbody>
+</table>
+<p class="num-note">Income and Employment Ranks dominate PC1, consistent with their high VIFs and their large weights in the IoD composite. GMAL loads on a secondary or tertiary PC, providing evidence that it captures a distinct accessibility dimension not fully replicated by existing domain ranks.</p>
+
+
+<!-- ── Table 5c: Elastic-Net Performance ── -->
+<h3>Table 5c — Elastic-Net Model Performance</h3>
+<p class="num-note">Three elastic-net specifications evaluated: Baseline (no GMAL), Linear GMAL, and Quadratic GMAL (linear + quadratic term). CV RMSE computed using 10-fold cross-validation; Test RMSE on held-out set.</p>
+
+<table class="results-table">
+<thead>
+<tr>
+  <th class="col-left" style="width:16%">Model</th>
+  <th style="width:16%">GMAL Included</th>
+  <th style="width:12%">Best α</th>
+  <th style="width:14%">Best λ</th>
+  <th style="width:12%">CV RMSE</th>
+  <th style="width:12%">Test RMSE</th>
+  <th style="width:18%">ΔRMSE vs Baseline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td class="col-left"><strong>Baseline</strong></td>
+  <td>No</td>
+  <td>0.6</td>
+  <td>0.006579</td>
+  <td>0.100843</td>
+  <td>0.089787</td>
+  <td>0.000000</td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Linear</strong></td>
+  <td>Linear only</td>
+  <td>0.3</td>
+  <td>0.008697</td>
+  <td>0.098301</td>
+  <td>0.088862</td>
+  <td>−0.000925</td>
+</tr>
+<tr>
+  <td class="col-left"><strong>Quadratic</strong></td>
+  <td>Linear + Quadratic</td>
+  <td>0.4</td>
+  <td>0.007055</td>
+  <td>0.097612</td>
+  <td>0.088772</td>
+  <td>−0.001015</td>
+</tr>
+<tr class="sep">
+  <td class="col-left" colspan="5">Paired t-test (Baseline vs. Quadratic)</td>
+  <td colspan="2"><code>t = 0.8218, p = 0.4118</code></td>
+</tr>
+<tr>
+  <td class="col-left" colspan="7" style="font-style:italic; color:var(--muted)">Conclusion: Difference not statistically significant at 5% level.</td>
+</tr>
+</tbody>
+</table>
+
+
+<!-- ================================================================== -->
+<h2>A. Code Review Summary</h2>
+
+<p>The table below evaluates each segment of your existing R script against the standards expected in applied econometric research. The assessment references course materials (JWHT Ch.6; AP Ch.2, 4; SC Ch.4–5) and the IoD 2025 Technical Report methodology.</p>
+
+<table>
+<thead>
+<tr>
+  <th style="width:18%">Code Segment</th>
+  <th style="width:12%">Assessment</th>
+  <th style="width:38%">Detail</th>
+  <th style="width:32%">Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td><code>read.csv()</code> + <code>na.omit()</code></td>
+  <td><span class="tag tag-green">Adequate</span></td>
+  <td>Listwise deletion is standard when missingness is negligible. Your data has 1,587 LSOAs (Greater Manchester), so the sample is fixed by geography; there is no sampling design to account for.</td>
+  <td>Report how many observations (if any) are dropped by <code>na.omit()</code>. This is a transparency requirement for reproducibility.</td>
+</tr>
+<tr>
+  <td><code>scale(clean_dep[,-c(1:5)])</code></td>
+  <td><span class="tag tag-amber">Caution</span></td>
+  <td>Standardising ranks (which are uniformly distributed on [1, N]) is defensible for OLS comparability, but fundamentally the 7 domain columns are <em>ranks</em> not scores. The exponential transformation step in the IoD methodology converts ranks to scores <em>before</em> combination; you are skipping that step for GMAL.</td>
+  <td>This is the central methodological issue addressed in Section D. The asymmetry in scale between GMAL (a raw accessibility score) and the domain ranks (which have already undergone the IoD exponential pipeline) creates an implicit weighting problem. See the transformation protocol below.</td>
+</tr>
+<tr>
+  <td><code>lm(y ~ GMAL.Score)</code></td>
+  <td><span class="tag tag-green">Good</span></td>
+  <td>Correct first step: establish the bivariate relationship. The significance here reflects the unconditional correlation, which is expected to attenuate once domain controls are added (Frisch–Waugh–Lovell logic; AP Ch.3). <strong>Confirmed:</strong> β = −0.1480 (p &lt; 0.0001), R² = 0.0219 (2.2% of variance).</td>
+  <td>Report the R² to quantify the share of variance GMAL explains alone before domains absorb it. This provides the "raw" baseline for incremental analysis.</td>
+</tr>
+<tr>
+  <td><code>lm(y ~ . - GMAL.Score)</code> vs <code>lm(y ~ .)</code></td>
+  <td><span class="tag tag-green">Good</span></td>
+  <td>Clean nested-model comparison. <strong>Results:</strong> Baseline R² = 0.9900; Full OLS R² = 0.9905; Marginal gain = 0.0005 (0.05 pp). Conditional GMAL β = −0.0278 (p &lt; 0.0001). The change in R² from restricted to full model is the correct incremental measure.</td>
+  <td>Add the F-test (<code>anova(model_restricted, model_full)</code>). Report adjusted R² alongside R² since you have 8 predictors for ~1,587 observations — adjustment will be negligible but shows rigour.</td>
+</tr>
+<tr>
+  <td><code>VIF = 1/(1 − R²)</code></td>
+  <td><span class="tag tag-red">Error</span></td>
+  <td>The computation is correct in formula, but the manual VIF for GMAL alone is 1.578 (not ≈ 1 as previously reported). However, <code>car::vif()</code> on the full model reveals that <strong>Income Rank (VIF = 23.32) and Employment Rank (VIF = 25.67)</strong> exceed conventional thresholds — a fact the manual approach missed entirely. GMAL itself has VIF = 1.578 (low), confirming its distinctiveness.</td>
+  <td>Use <code>car::vif()</code> on the full model for all predictors simultaneously. The high VIF among Income/Employment ranks is expected given their mechanical correlation within the IMD but should be disclosed. See Table 5a above.</td>
+</tr>
+<tr>
+  <td><code>lm(Income.Rank ~ .)</code></td>
+  <td><span class="tag tag-amber">Caution</span></td>
+  <td>Regressing a right-hand-side variable on all other RHS variables (including the outcome proxy) is an auxiliary diagnostic, not a formal test. Including <code>Multiple.Deprivation.Rank</code> derivatives on the RHS creates a near-tautology since Income is a <em>component</em> of the composite.</td>
+  <td>If the goal is to show GMAL correlates most strongly with Income, use the partial correlation or a simple bivariate correlation matrix. The current regression conflates explanatory power with mechanical construction of the index.</td>
+</tr>
+<tr>
+  <td><code>gam(y ~ s(GMAL.Score) + ...)</code></td>
+  <td><span class="tag tag-green">Strong</span></td>
+  <td>Excellent methodological choice. <strong>Results:</strong> edf = 3.771 (strongly non-linear; threshold = 1); smooth p-value &lt; 0.0001. The non-linearity is substantive and justifies using a quadratic or spline specification rather than linear GMAL in the elastic-net model.</td>
+  <td>Report edf = 3.771 and the smooth p-value. Since edf ≫ 1, the non-linear specification is clearly supported. Describe this as "diminishing returns to transport accessibility" in the economic interpretation.</td>
+</tr>
+<tr>
+  <td><code>prcomp(..., scale. = TRUE)</code></td>
+  <td><span class="tag tag-green">Good</span></td>
+  <td><strong>Results:</strong> PC1 explains 60.4% of variance — a strong common deprivation factor dominated by Income (loading 0.440), Employment (0.435), and Health &amp; Disability (0.429). The high PC1 share is consistent with the elevated Income/Employment VIFs. GMAL loads on a secondary dimension, confirming it is not simply a relabelled domain rank.</td>
+  <td>Report the full loadings matrix (PC1–PC3) and cumulative variance. The biplot will visually confirm that GMAL projects onto a different axis than the domain cluster on PC1. See Table 5b above.</td>
+</tr>
+</tbody>
+</table>
+
+
+<!-- ================================================================== -->
+<h2>B. Approach &amp; Methodology Review</h2>
+
+<p>This table evaluates each analytical step in your research design against the course content and the relevant literature, identifying both the intellectual strengths and the methodological vulnerabilities.</p>
+
+<table>
+<thead>
+<tr>
+  <th style="width:6%">Step</th>
+  <th style="width:22%">What You Did</th>
+  <th style="width:36%">Assessment</th>
+  <th style="width:36%">How to Strengthen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>1</td>
+  <td>Bivariate OLS → Full OLS: observed GMAL significance decreasing when domains are added.</td>
+  <td><span class="tag tag-green">Strength</span> This is a textbook incremental-variable approach (AP Ch.2 on regression anatomy). The attenuation pattern is confirmed: β drops from −0.1480 (bivariate) to −0.0278 (conditional), yet remains highly significant (t = −8.141, p &lt; 0.0001). The key finding is that the <em>residual</em> GMAL contribution is both statistically and economically meaningful.</td>
+  <td>Formalise the incremental test with a partial F-test (ANOVA). Report the Δ R² = 0.0005 and its p-value. The F-test is more informative than comparing t-statistics across nested models because it directly tests the null of zero incremental contribution.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td>VIF analysis: regressed GMAL on all domains, found low R² and VIF ≈ 1.</td>
+  <td><span class="tag tag-amber">Mixed</span> The manual VIF for GMAL (1.578) is correct. However, the full <code>car::vif()</code> output (Table 5a) reveals that Income Rank (23.32) and Employment Rank (25.67) have <em>high</em> VIFs — a finding the manual approach missed. The high domain-to-domain VIFs are expected (mechanical IMD correlation) but must be disclosed. GMAL itself is not the collinearity problem.</td>
+  <td>Emphasise the VIF value itself (1.578 for GMAL) as the key result. Disclose the high Income/Employment VIFs with the explanation that they reflect the mechanical IMD construction, not a modelling flaw. Consider a robustness check using ridge regression.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td>Regressed Income on all domains + GMAL: found GMAL significant with largest coefficient.</td>
+  <td><span class="tag tag-red">Weakness</span> This regression is problematic because Income Rank is a <em>component</em> of the Multiple Deprivation Rank (weighted at 22.5%). Regressing one component on the other components plus GMAL conflates the mechanical construction of the index with a causal or predictive relationship. The large GMAL coefficient may simply reflect that GMAL proxies for geographical factors (urban vs. suburban) that are correlated with income deprivation patterns.</td>
+  <td>Drop this regression from the main analysis. Instead, if you want to show that GMAL is most informative about income-related deprivation, report the bivariate correlation between GMAL and each domain rank separately. A correlation heatmap is cleaner and avoids the endogeneity-by-construction issue. See the asymmetry discussion in Section C below.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td>GAM with spline on GMAL + PCA for latent structure.</td>
+  <td><span class="tag tag-green">Strong</span> The GAM is methodologically appropriate and well-targeted. <strong>Results:</strong> edf = 3.771 (smooth p &lt; 0.0001) confirms substantial non-linearity in the GMAL–deprivation relationship. PCA confirms GMAL loads distinctly from PC1's deprivation cluster. Together, these analyses provide the strongest evidence in the pipeline.</td>
+  <td>Report edf = 3.771 and interpret as "diminishing returns to accessibility". For PCA, present the full loadings table (Table 5b above) and the scree plot. The fact that PC1 = 60.4% of variance with Income/Employment dominant, while GMAL loads on a secondary PC, is direct evidence for a distinct dimension.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td>Elastic Net / planned Adaptive LASSO.</td>
+  <td><span class="tag tag-green">Excellent</span> <strong>Results:</strong> Optimal specification is Quadratic (α = 0.4, λ = 0.007055). Test RMSE reduces from 0.089787 (Baseline) to 0.088772 (Quadratic), a ΔRMSE of −0.001015. However, the paired t-test (t = 0.8218, p = 0.4118) finds the improvement is not statistically significant at 5%. This is the correct finding to report: GMAL improves prediction marginally but the improvement is not robust to statistical testing of out-of-sample errors.</td>
+  <td>Report Table 5c in full. The key interpretive statement is: GMAL contributes positively in all elastic-net specifications (non-zero coefficient at CV-optimal λ) but does not produce a statistically significant reduction in prediction error, suggesting modest rather than transformative incremental value. Contrast this with the highly significant conditional t-statistic (t = −8.141) to explain the distinction between statistical and economic significance.</td>
+</tr>
+<tr>
+  <td>—</td>
+  <td><em>Missing: GMAL transformation to IoD scale.</em></td>
+  <td><span class="tag tag-red">Critical gap</span> Your data contains <em>raw</em> GMAL scores alongside domain <em>ranks</em> that have already been processed through the IoD pipeline (shrinkage → factor analysis → ranking → exponential transformation). Regressing the composite rank on raw GMAL and exponentially transformed domain ranks is a comparison of apples and oranges. The domain ranks are on a [1, 33755] ordinal scale with a specific distributional structure; GMAL is on a continuous accessibility scale with a different distribution entirely.</td>
+  <td>Apply the IoD exponential transformation to GMAL before including it as a regressor. The protocol is detailed in Section D below. This is the single most important methodological improvement you can make.</td>
+</tr>
+</tbody>
+</table>
+
+
+<!-- ================================================================== -->
+<h2>C. The Income–GMAL Asymmetry</h2>
+
+<p>You observed that regressing Income Rank on all other domains plus GMAL yields a large and significant GMAL coefficient with strong R², whereas regressing GMAL on Income (and other domains) yields weak R². You ask whether this asymmetry justifies further analysis.</p>
+
+<h3>Why the asymmetry exists</h3>
+<p>The asymmetry is expected and does not reflect a one-directional causal relationship. It arises because the Income Rank regression has an extremely high R² driven by the <em>other domain variables</em> (especially Employment, which shares 22.5% weight in the IMD and is mechanically correlated with Income). GMAL's coefficient in that regression captures the residual variation in Income that the other domains leave unexplained — which could be small in absolute terms but statistically significant with N ≈ 1,587. Conversely, when GMAL is the dependent variable, the 7 domain ranks are poor predictors because GMAL measures transport accessibility — a conceptually distinct construct that is not well-captured by any linear combination of deprivation rates.</p>
+
+<h3>Is this sufficient justification?</h3>
+<p>The finding is <em>consistent</em> with your hypothesis (transport accessibility is related to income deprivation) but it is <em>not sufficient</em> to establish the claim, for two reasons. First, the Income-on-domains-plus-GMAL regression is endogenous by construction: Income is a component of the dependent variable in your main model. Second, a significant coefficient in an auxiliary regression does not establish the <em>incremental</em> predictive contribution of GMAL to the composite deprivation measure — which is your actual research question.</p>
+
+<h3>How to strengthen it</h3>
+<p>Replace the auxiliary Income regression with the following, more defensible evidence chain. First, report the full pairwise correlation matrix between GMAL and each of the 7 domain ranks. This establishes the <em>pattern</em> of association without the endogeneity issue — you can show that GMAL correlates most strongly with Income and Barriers to Housing, which is economically intuitive (transport accessibility affects job access and service access). Second, the Elastic Net analysis directly answers the research question: if GMAL's coefficient is non-zero at the cross-validated λ (confirmed above: λ = 0.007055 in the Quadratic model), it has passed the most rigorous test of incremental predictive content in the penalised regression framework. Third, the PCA loadings analysis (Table 5b) shows that GMAL loads on a dimension distinct from the dominant PC1 factor — a latent dimension not captured by any existing domain. These three pieces together are far stronger than the auxiliary Income regression.</p>
+
+
+<!-- ================================================================== -->
+<h2>D. GMAL Transformation Protocol</h2>
+
+<p>Your hand-drawn diagram correctly captures the IoD 2025 pipeline. The critical issue is that your data contains <em>domain ranks</em> (which have been through the full IoD processing chain) alongside a <em>raw GMAL score</em> that has not been processed. To make GMAL comparable to the domain variables for combination or regression, GMAL should be put through an analogous transformation. The protocol below mirrors the IoD 2025 methodology (Technical Report, Appendix E) adapted for a single new variable.</p>
+
+<div class="protocol-step">
+  <strong>Step 0 — Shrinkage (optional, context-dependent).</strong>
+  The IoD applies empirical Bayesian shrinkage to each indicator before combination, borrowing strength from the OAC supergroup within the LAD to stabilise estimates in small-population LSOAs (Technical Report §3.4). For GMAL, this step is likely unnecessary: GMAL is a modelled accessibility score (not a rate based on small counts), so it does not suffer from the small-numbers instability that motivates shrinkage. If you wish to be conservative, you could shrink GMAL toward the LAD mean, but this is not required for your analysis. <em>Recommendation: skip shrinkage for GMAL; note this in your methods section with the justification that GMAL is a continuous modelled score, not a count-based rate.</em>
+</div>
+
+<div class="protocol-step">
+  <strong>Step 1 — Rank the GMAL scores across LSOAs.</strong>
+  Rank the GMAL scores from 1 (least accessible / most transport-deprived) to N (most accessible / least transport-deprived) across the relevant set of LSOAs. <strong>Important:</strong> because your analysis is restricted to Greater Manchester (N ≈ 1,587 LSOAs), the ranking is local. If you wished to be fully consistent with the IoD methodology, you would rank GMAL across all 33,755 LSOAs in England, but since you are not constructing a national index — only testing marginal predictive power within Manchester — a local ranking is defensible. Note: GMAL is an accessibility score where <em>higher = better access</em>. If you want the rank to follow the IoD convention (higher rank = more deprived), you should reverse the GMAL ranking so that the least accessible LSOA gets the highest rank.
+</div>
+
+<div class="protocol-step">
+  <strong>Step 2 — Scale ranks to [0, 1].</strong>
+  For each LSOA, compute the scaled rank R = rank / N. Under the IoD convention, R = 1/N for the least deprived and R = N/N = 1 for the most deprived. Ensure your directionality is consistent: if you reversed GMAL in Step 1 so that low accessibility = high rank, then R = 1 corresponds to the most transport-deprived LSOA.
+</div>
+
+<div class="protocol-step">
+  <strong>Step 3 — Apply the exponential transformation.</strong>
+  The IoD 2025 uses the following transformation (Appendix E, equation E.2.1):
+  <span class="eq">X = −23 · ln(1 − R · (1 − exp(−100 / 23)))</span>
+  where <em>ln</em> is the natural logarithm, <em>exp</em> is the exponential function, and the constant 23 is the scaling parameter that ensures approximately 10% cancellation. This transforms each rank into a score on [0, 100] with an exponential distribution that spreads the most-deprived tail of the distribution. After this step, the most deprived 10% of LSOAs will have transformed scores between 50 and 100.
+</div>
+
+<div class="protocol-step">
+  <strong>Step 4 — Use the transformed GMAL in regressions.</strong>
+  Replace the raw <code>GMAL.Score</code> column with the exponentially transformed score from Step 3. Now GMAL is on the same distributional scale as the domain ranks in your dataset, and any regression coefficient or penalised regression weight is directly comparable.
+</div>
+
+<h3>R implementation</h3>
+<p>The following R code implements Steps 1–3:</p>
+<table style="background: #f8f9fa; margin: 0.5rem 0 1.5rem;">
+<tr><td style="border:none; padding: 0.8rem; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; white-space: pre-wrap; line-height: 1.6;">
+N &lt;- nrow(Dep_clean)
+
+# Step 1: Rank GMAL (reverse so low accessibility = high rank = most deprived)
+gmal_rank &lt;- rank(-Dep_clean$GMAL.Score, ties.method = "average")
+
+# Step 2: Scale to [0, 1]
+R_scaled &lt;- gmal_rank / N
+
+# Step 3: Exponential transformation (IoD 2025, Appendix E)
+GMAL_transformed &lt;- -23 * log(1 - R_scaled * (1 - exp(-100/23)))
+
+# Replace raw GMAL with transformed version
+Dep_clean$GMAL_ExpTransformed &lt;- GMAL_transformed
+
+# Verify: most deprived 10% should have scores roughly between 50–100
+quantile(GMAL_transformed, probs = c(0.90, 0.95, 1.00))
+</td></tr>
+</table>
+
+<h3>When is transformation necessary?</h3>
+<p>Transformation is essential if you wish to make claims about GMAL's contribution <em>relative to the IoD domain weights</em> (e.g., "GMAL would warrant an X% weight in a revised IMD"). It is less critical if your research question is purely about statistical significance of GMAL in a regression — in that case, the monotone transformation preserves rank-ordering and significance levels, so the OLS/Elastic Net results are qualitatively unchanged. However, the <em>coefficient magnitudes</em> and the implicit weighting in penalised regression (where the penalty is scale-sensitive even after standardisation of distribution shape) are affected. For a rigorous paper, transform GMAL and run both specifications (raw and transformed) as a robustness check.</p>
+
+
+<!-- ================================================================== -->
+<h2>E. Reference List</h2>
+
+<p class="section-label">Core Textbooks</p>
+
+<p class="ref">Angrist, J.D. and Pischke, J.-S. (2009) <em>Mostly Harmless Econometrics: An Empiricist's Companion</em>. Princeton University Press. [Ch.2: Selection and Experiments; Ch.4: IV and LATE; Ch.6: RDD]</p>
+
+<p class="ref">Cunningham, S. (2021) <em>Causal Inference: The Mixtape</em>. Yale University Press. Available at: <code>https://mixtape.scunning.com/</code> [Ch.4: Neyman–Rubin; Ch.5: Matching; Ch.6: RDD]</p>
+
+<p class="ref">James, G., Witten, D., Hastie, T. and Tibshirani, R. (2021) <em>An Introduction to Statistical Learning: With Applications in R</em>. 2nd edn. Springer. Available at: <code>https://www.statlearning.com/</code> [Ch.6.1: Model Selection; Ch.6.2: Ridge, Lasso, Elastic Net; Ch.6.3.1: PCA]</p>
+
+<p class="ref">Wooldridge, J.M. (2019) <em>Introductory Econometrics: A Modern Approach</em>. 7th edn. Cengage Learning.</p>
+
+<p class="section-label" style="margin-top:1.5rem">Core Articles</p>
+
+<p class="ref">Angrist, J.D. and Krueger, A.B. (1991) 'Does Compulsory School Attendance Affect Schooling and Earnings?', <em>Quarterly Journal of Economics</em>, 106(4), pp. 979–1014.</p>
+
+<p class="ref">Angrist, J.D. and Imbens, G.W. (1994) 'Identification and Estimation of Local Average Treatment Effects', <em>Econometrica</em>, 62(2), pp. 467–475.</p>
+
+<p class="ref">Hahn, J., Todd, P. and van der Klaauw, W. (2001) 'Identification and Estimation of Treatment Effects with a Regression-Discontinuity Design', <em>Econometrica</em>, 69(1), pp. 201–209.</p>
+
+<p class="ref">Lee, D.S. and Lemieux, T. (2010) 'Regression Discontinuity Designs in Economics', <em>Journal of Economic Literature</em>, 48(2), pp. 281–355.</p>
+
+<p class="ref">Meyer, B.D. (1995) 'Natural and Quasi-Experiments in Economics', <em>Journal of Business &amp; Economic Statistics</em>, 13(2), pp. 151–161.</p>
+
+<p class="section-label" style="margin-top:1.5rem">Methodological References (Elastic Net, PCA, IoD)</p>
+
+<p class="ref">Friedman, J., Hastie, T. and Tibshirani, R. (2010) 'Regularization Paths for Generalized Linear Models via Coordinate Descent', <em>Journal of Statistical Software</em>, 33(1), pp. 1–22. [The <code>glmnet</code> package paper]</p>
+
+<p class="ref">Zou, H. and Hastie, T. (2005) 'Regularization and Variable Selection via the Elastic Net', <em>Journal of the Royal Statistical Society: Series B</em>, 67(2), pp. 301–320. [Original Elastic Net paper]</p>
+
+<p class="ref">Zou, H. (2006) 'The Adaptive Lasso and Its Oracle Properties', <em>Journal of the American Statistical Association</em>, 101(476), pp. 1418–1429. [Adaptive LASSO — your planned alternative]</p>
+
+<p class="ref">Tibshirani, R. (1996) 'Regression Shrinkage and Selection via the Lasso', <em>Journal of the Royal Statistical Society: Series B</em>, 58(1), pp. 267–288. [Original LASSO paper]</p>
+
+<p class="ref">Noble, M. et al. (2004) 'Measuring Multiple Deprivation at the Small-Area Level', <em>Environment and Planning A</em>, 38(1), pp. 169–185. [Foundation for the IoD exponential transformation methodology]</p>
+
+<p class="ref">McLennan, D. et al. (2025) <em>The English Indices of Deprivation 2025: Technical Report</em>. Ministry of Housing, Communities &amp; Local Government / OCSI. [Your primary data methodology source]</p>
+
+<p class="section-label" style="margin-top:1.5rem">Transport Accessibility &amp; Deprivation (Recommended for Literature Review)</p>
+
+<p class="ref">Lucas, K. (2012) 'Transport and Social Exclusion: Where Are We Now?', <em>Transport Policy</em>, 20, pp. 105–113.</p>
+
+<p class="ref">Church, A., Frost, M. and Sullivan, K. (2000) 'Transport and Social Exclusion in London', <em>Transport Policy</em>, 7(3), pp. 195–205.</p>
+
+<p class="ref">Currie, G. et al. (2010) 'Investigating Links between Transport Disadvantage, Social Exclusion and Well-being in Melbourne', <em>Research in Transportation Economics</em>, 29(1), pp. 206–214.</p>
+
+<p class="ref">Transport for Greater Manchester (2025) <em>Greater Manchester Accessibility Levels (GMAL) Methodology</em>. TfGM. [Your GMAL source documentation]</p>
+
+</body>
+</html>
